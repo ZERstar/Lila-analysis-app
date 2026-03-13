@@ -108,7 +108,7 @@ function MapHUD() {
 
 export function MapViewer() {
   const selectedMap = useStore(s => s.selectedMap);
-  const minimapUrl = `/data/maps/${selectedMap}.png`;
+  const minimapUrl = `${import.meta.env.BASE_URL}data/maps/${selectedMap}.png`;
   const bounds: L.LatLngBoundsExpression = [[0, 0], [1024, 1024]];
 
   return (

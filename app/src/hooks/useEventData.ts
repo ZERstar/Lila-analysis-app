@@ -23,7 +23,7 @@ export function useEventData() {
       try {
         // Load matches index (once)
         if (!matchesLoaded) {
-          const res = await fetch('/data/matches.json');
+          const res = await fetch(`${import.meta.env.BASE_URL}data/matches.json`);
           const matches: Match[] = await res.json();
           if (!cancelled) setMatches(matches);
           matchesLoaded = true;
@@ -41,9 +41,9 @@ export function useEventData() {
 
         // Load events, positions, and heatmap in parallel
         const [eventsRes, positionsRes, heatmapRes] = await Promise.all([
-          fetch(`/data/${selectedMap}_events.json`),
-          fetch(`/data/${selectedMap}_positions.json`),
-          fetch(`/data/${selectedMap}_heatmap.json`),
+          fetch(`${import.meta.env.BASE_URL}data/${selectedMap}_events.json`),
+          fetch(`${import.meta.env.BASE_URL}data/${selectedMap}_positions.json`),
+          fetch(`${import.meta.env.BASE_URL}data/${selectedMap}_heatmap.json`),
         ]);
 
         const events: EventData[] = await eventsRes.json();
