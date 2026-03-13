@@ -99,7 +99,7 @@ def compute_pixel_coords(df):
 
 def compute_normalized_time(df):
     """Normalize timestamps to 0.0-1.0 per match."""
-    df['ts_ms'] = df['ts'].astype('int64') // 10**6
+    df['ts_ms'] = df['ts'].astype('int64')
     # Compute min/max per match via transform (preserves index & columns)
     match_min = df.groupby('match_id')['ts_ms'].transform('min')
     match_max = df.groupby('match_id')['ts_ms'].transform('max')

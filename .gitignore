@@ -1,0 +1,13 @@
+# Raw data
+player_data/
+
+# Python
+preprocessing/.venv/
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+
+# Node
+node_modules/

@@ -81,13 +81,38 @@ function MapViewerInner({ minimapUrl }: { minimapUrl: string }) {
   );
 }
 
+const HEATMAP_LABELS: Record<string, string> = {
+  off: '', kills: 'Kill Density', deaths: 'Death Density',
+  traffic: 'Traffic', loot: 'Loot Density', killDiff: 'Net Kills',
+};
+const TIME_LABELS: Record<string, string> = {
+  all: '', early: 'Early Game (0-33%)', mid: 'Mid Game (33-66%)', late: 'Late Game (66-100%)',
+};
+
+function MapHUD() {
+  const { heatmapMode, timeWindow, showHumans, showBots } = useStore();
+  if (heatmapMode === 'off') return null;
+
+  const entityLabel = showHumans && showBots ? '' : showHumans ? 'Humans only' : showBots ? 'Bots only' : '';
+  const timeLabel = TIME_LABELS[timeWindow];
+  const parts = [HEATMAP_LABELS[heatmapMode], timeLabel, entityLabel].filter(Boolean);
+
+  return (
+    <div className="absolute top-3 right-3 z-[1000] pointer-events-none">
+      <div className="bg-black/70 border border-[#444] rounded px-3 py-1.5 text-xs text-gray-200 backdrop-blur-sm">
+        {parts.join(' · ')}
+      </div>
+    </div>
+  );
+}
+
 export function MapViewer() {
   const selectedMap = useStore(s => s.selectedMap);
   const minimapUrl = `/data/maps/${selectedMap}.png`;
   const bounds: L.LatLngBoundsExpression = [[0, 0], [1024, 1024]];
 
   return (
-    <div className="flex-1 h-full">
+    <div className="flex-1 h-full relative">
       <MapContainer
         key={selectedMap}
         crs={L.CRS.Simple}
@@ -100,6 +125,7 @@ export function MapViewer() {
       >
         <MapViewerInner minimapUrl={minimapUrl} />
       </MapContainer>
+      <MapHUD />
     </div>
   );
 }

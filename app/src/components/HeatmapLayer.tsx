@@ -74,16 +74,21 @@ export function HeatmapLayer() {
     if (heatmapMode === 'killDiff') {
       const positive = modeData.filter(p => p[2] > 0);
       const negative = modeData.filter(p => p[2] < 0).map(p => [p[0], p[1], Math.abs(p[2])] as [number, number, number]);
-      maxVal = Math.max(...modeData.map(p => Math.abs(p[2])), 1);
-      points = positive.map(([cx, cy, v]) => [1024 - cy, cx, v / maxVal]);
-      gradient = { '0': 'transparent', '0.3': '#fca5a5', '0.6': '#ef4444', '1': '#7f1d1d' };
+      // Use 90th percentile for normalization so outliers don't flatten everything
+      const absVals = modeData.map(p => Math.abs(p[2])).sort((a, b) => a - b);
+      maxVal = absVals[Math.floor(absVals.length * 0.9)] || 1;
+      // Clamp to [0, 1] range after normalization
+      const normalize = (v: number) => Math.min(1, v / maxVal);
+      points = positive.map(([cx, cy, v]) => [1024 - cy, cx, normalize(v)]);
+      // Lower gradient thresholds so even value=1 is visible
+      gradient = { '0': 'transparent', '0.05': '#fca5a5', '0.3': '#ef4444', '0.7': '#dc2626', '1': '#7f1d1d' };
 
       const layers: L.Layer[] = [];
       if (negative.length > 0) {
-        const negPoints = negative.map(([cx, cy, v]) => [1024 - cy, cx, v / maxVal] as [number, number, number]);
+        const negPoints = negative.map(([cx, cy, v]) => [1024 - cy, cx, normalize(v)] as [number, number, number]);
         layers.push(L.heatLayer(negPoints, {
           ...config, maxZoom: 4, max: 1,
-          gradient: { '0': 'transparent', '0.3': '#93c5fd', '0.6': '#3b82f6', '1': '#1e3a5f' },
+          gradient: { '0': 'transparent', '0.05': '#93c5fd', '0.3': '#3b82f6', '0.7': '#2563eb', '1': '#1e3a5f' },
         }));
       }
       if (points.length > 0) {

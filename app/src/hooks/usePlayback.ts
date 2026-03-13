@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react';
 import { useStore } from '../store';
 
 export function usePlayback() {
-  const { isPlaying, playbackSpeed, playbackTime, setPlaybackTime, setIsPlaying } = useStore();
+  const isPlaying = useStore(s => s.isPlaying);
+  const playbackSpeed = useStore(s => s.playbackSpeed);
   const rafRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number | null>(null);
 
@@ -16,13 +17,14 @@ export function usePlayback() {
       const dt = lastTimeRef.current ? (now - lastTimeRef.current) / 1000 : 0;
       lastTimeRef.current = now;
 
-      const newTime = playbackTime + dt * playbackSpeed * 0.05; // ~20s full playback at 1x
+      const currentTime = useStore.getState().playbackTime;
+      const newTime = currentTime + dt * playbackSpeed * 0.05; // ~20s full playback at 1x
       if (newTime >= 1) {
-        setPlaybackTime(1);
-        setIsPlaying(false);
+        useStore.getState().setPlaybackTime(1);
+        useStore.getState().setIsPlaying(false);
         return;
       }
-      setPlaybackTime(newTime);
+      useStore.getState().setPlaybackTime(newTime);
       rafRef.current = requestAnimationFrame(tick);
     };
 

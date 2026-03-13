@@ -52,7 +52,7 @@ export const useStore = create<Store>((set) => ({
       ? state.selectedDates.filter(d => d !== date)
       : [...state.selectedDates, date]
   })),
-  setSelectedMatch: (matchId) => set({ selectedMatch: matchId, playbackTime: 0, isPlaying: false }),
+  setSelectedMatch: (matchId) => set({ selectedMatch: matchId, playbackTime: 1, isPlaying: false }),
   setShowKills: (show) => set({ showKills: show }),
   setShowDeaths: (show) => set({ showDeaths: show }),
   setShowLoot: (show) => set({ showLoot: show }),
